@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="GitHub 文件加速下载工具，内置多条公共加速线路，支持延迟检测，自动选择最快节点">
+<title>GitHub 加速下载 - 多线路测速加速</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='%230b1020'/%3E%3Cpath d='M13 3 5.5 13.5h5L10 21l8.5-11h-5.5L13 3z' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M13 3 5.5 13.5h5L10 21l8.5-11h-5.5L13 3z" fill="currentColor"/></svg>
+    </div>
+    <h1>GitHub <span class="grad">加速下载</span></h1>
+    <p class="sub">输入 GitHub 链接，自动测速挑选最快线路，一键生成加速下载地址</p>
+  </header>
+
+  <section class="card">
+    <div class="input-row">
+      <div class="input-box" id="inputBox">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <input id="ghUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="粘贴 GitHub 链接，如 https://github.com/user/repo/releases/download/v1.0/file.zip">
+        <button id="clearBtn" class="clear-btn" aria-label="清空" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <button id="goBtn" class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 3 5.5 13.5h5L10 21l8.5-11h-5.5L13 3z" fill="currentColor"/></svg>
+        <span>加速下载</span>
+      </button>
+    </div>
+    <div class="chips">
+      <span class="chip-label">示例</span>
+      <button class="chip" type="button" data-ex="https://github.com/owner/repo/releases/download/v1.0.0/app.zip">Release 文件</button>
+      <button class="chip" type="button" data-ex="https://github.com/owner/repo/archive/refs/heads/main.zip">分支源码包</button>
+      <button class="chip" type="button" data-ex="https://raw.githubusercontent.com/owner/repo/main/README.md">Raw 文件</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="node-head">
+      <div class="node-head-text">
+        <h2>加速线路</h2>
+        <p class="node-sub">进入页面自动测速，可添加自定义线路，按延迟自动排序</p>
+      </div>
+      <div class="node-actions">
+        <label class="switch" title="测速完成后自动选择最快线路">
+          <input type="checkbox" id="autoPick" checked>
+          <span class="slider"></span>
+          <span class="switch-text">自动选最快</span>
+        </label>
+        <button id="addBtn" class="btn-ghost" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          添加线路
+        </button>
+        <button id="testBtn" class="btn-ghost" type="button">
+          <svg id="testIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span id="testBtnText">检测延迟</span>
+        </button>
+      </div>
+    </div>
+    <div id="addRow" class="add-row" hidden>
+      <div class="input-box add-box">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <input id="addInput" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="输入自定义加速线路，如 https://your-proxy.workers.dev/">
+      </div>
+      <button id="addConfirm" class="btn-ghost sm" type="button">添加</button>
+      <button id="addCancel" class="btn-ghost sm" type="button">取消</button>
+    </div>
+    <div id="nodeGrid" class="node-grid"></div>
+    <p id="testSummary" class="test-summary" hidden></p>
+  </section>
+
+  <section id="result" class="card result" hidden>
+    <div class="result-head">
+      <span class="result-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <div>
+        <h2>加速链接已生成</h2>
+        <p id="resultTip">若浏览器未自动跳转，请复制链接手动打开</p>
+      </div>
+    </div>
+    <div class="link-box">
+      <code id="finalLink"></code>
+      <button id="copyBtn" type="button">复制</button>
+    </div>
+    <div class="countdown">
+      <div class="count-bar"><i id="countBar"></i></div>
+      <div class="count-foot">
+        <span id="countText">3 秒后自动跳转</span>
+        <span class="count-btns">
+          <button id="cancelBtn" class="btn-text" type="button">取消跳转</button>
+          <button id="jumpNowBtn" class="btn-text primary" type="button">立即跳转</button>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>本站仅做链接拼接，不存储任何文件。所有资源均来自 GitHub 官方源站，请遵守相应开源协议。</p>
+  </footer>
+</main>
+
+<div id="toast" class="toast" role="status" hidden></div>
+<script src="js/app.js"></script>
+</body>
+</html>
